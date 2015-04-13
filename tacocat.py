@@ -1,6 +1,6 @@
 from flask import (Flask, g, render_template, flash, redirect, 
                   url_for, abort)
-from flask.ext.bcrypt import generate_password_hash
+from flask.ext.bcrypt import generate_password_hash, check_password_hash
 from flask.ext.login import (LoginManager, login_user, logout_user,
                             login_required, current_user)
 
@@ -49,7 +49,7 @@ def index():
     return render_template('index.html', tacos=tacos)
 
 
-@app.route('/register')
+@app.route('/register', methods=('GET', 'POST'))
 def register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
@@ -60,6 +60,30 @@ def register():
         )
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    form = forms.LoginForm()
+    try:
+        user = models.User.get(models.User.email == form.email.data)
+    except models.DoesNotExist:
+        flash("Email and/or password doesn't match.", "error")
+    else:
+        if check_password_hash(user.password, form.password.data):
+            login_user(user)
+            flash("You've been logged in!", "success")
+        else:
+            flash("Email and/or password doesn't match.", "error")
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("YOu've been logged out.", "success")
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

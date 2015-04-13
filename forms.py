@@ -35,7 +35,3 @@ class RegisterForm(Form):
 class LoginForm(Form):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-
-
-class PostForm(Form):
-    content = TextAreaField("What's up?", validators=[DataRequired()])
