@@ -1,5 +1,9 @@
 from flask.ext.bcrypt import generate_password_hash
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin, current_user
+from flask_wtf import Form
+from wtforms import StringField, PasswordField, TextAreaField
+from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
+                                Length, EqualTo)
 from peewee import *
 
 DATABASE = SqliteDatabase('tacos.db')
@@ -15,25 +19,30 @@ class User(UserMixin, Model):
     @classmethod
     def create_user(cls, email, password):
         try:
-            cls.create(
-                email=email,
-                password=generate_password_hash(password))
+            with DATABASE.transaction():
+                cls.create(
+                    email=email,
+                    password=generate_password_hash(password))
         except IntegrityError:
             raise ValueError("User already exists.")
 
 
 class Taco(Model):
+    user = ForeignKeyField(
+        rel_model=User,
+        related_name='tacos')
     protein = CharField()
     shell = CharField()
-    cheese = BooleanField(default=True)
+    cheese = CharField()
     extras = CharField()
         
     class Meta:
         database = DATABASE
 
     @classmethod
-    def create(self, protein, shell, cheese, extras):
-        self.create(
+    def create_taco(cls, user, protein, shell, cheese, extras):
+        cls.create(
+            user=user,
             protein=protein,
             shell=shell,
             cheese=cheese,

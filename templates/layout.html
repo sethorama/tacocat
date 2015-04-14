@@ -26,9 +26,10 @@
           <!-- menu goes here -->
           {% if current_user.is_authenticated() %}                
                 <a href="{{ url_for('logout') }}" class="icon-power" title="Log out">Log Out</a>
+                <a href="{{ url_for('taco') }}" class="icon-power" title="Add a New Taco">Add a New Taco</a>
                 {% else %}
                 <a href="{{ url_for('login') }}" class="icon-power" title="Log in">Log In</a>
-                <a href="{{ url_for('register') }}" class="icon-profile" title="Register">Register</a>
+                <a href="{{ url_for('register') }}" class="icon-profile" title="Sign Up">Sign Up</a>
                 {% endif %}
           </nav>
           {% block content %}{% endblock %}

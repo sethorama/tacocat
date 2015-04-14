@@ -58,6 +58,8 @@ def register():
             email=form.email.data,
             password=form.password.data
         )
+        user = models.User.get(models.User.email == form.email.data)
+        login_user(user)
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
 
@@ -86,6 +88,21 @@ def logout():
     logout_user()
     flash("You've been logged out.", "success")
     return redirect(url_for('index'))
+
+
+@app.route('/taco', methods=('POST', 'GET'))
+@login_required
+def taco():
+    form = forms.TacoForm()
+    if form.validate_on_submit():
+        models.Taco.create_taco(user=g.user._get_current_object(),
+                                protein=form.protein,
+                                cheese=form.cheese,
+                                shell=form.shell,
+                                extras=form.extras)
+        flash("Taco ordered!", "success")
+        return (redirect(url_for('index')))
+    return render_template('taco.html', form=form)
 
 
 if __name__ == '__main__':
