@@ -96,11 +96,11 @@ def taco():
     form = forms.TacoForm()
     if form.validate_on_submit():
         models.Taco.create_taco(user=g.user._get_current_object(),
-                                protein=form.protein,
-                                cheese=form.cheese,
-                                shell=form.shell,
-                                extras=form.extras)
-        flash("Taco ordered!", "success")
+                                protein=form.protein.data.strip(),
+                                cheese=form.cheese.data.strip(),
+                                shell=form.shell.data.strip(),
+                                extras=form.extras.data.strip())
+        flash("Taco Added!", "success")
         return (redirect(url_for('index')))
     return render_template('taco.html', form=form)
 

@@ -1,7 +1,7 @@
 from flask.ext.bcrypt import generate_password_hash
 from flask.ext.login import UserMixin, current_user
-from flask_wtf import Form
-from wtforms import StringField, PasswordField, TextAreaField
+from flask.ext.wtf import Form
+from wtforms import StringField, PasswordField, TextField, BooleanField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 from peewee import *
@@ -33,15 +33,15 @@ class Taco(Model):
         related_name='tacos')
     protein = CharField()
     shell = CharField()
-    cheese = CharField()
+    cheese = BooleanField()
     extras = CharField()
         
     class Meta:
         database = DATABASE
 
     @classmethod
-    def create_taco(cls, user, protein, shell, cheese, extras):
-        cls.create(
+    def create_taco(self, user, protein, shell, cheese, extras):
+        self.create(
             user=user,
             protein=protein,
             shell=shell,
